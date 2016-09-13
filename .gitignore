@@ -36,3 +36,4 @@ libraries/*
 .travis.yml
 .vscode/.browse.VC.db
 .idea
+.piolibdeps
