@@ -1,0 +1,9 @@
+// Place your settings in this file to overwrite default and user settings.
+{
+    "clang.cxxflags": [
+        "-I${workspaceRoot}/.pioenvs/pro8MHzatmega328/FrameworkArduino"
+    ],
+
+    // Run 'clang-format' on save.
+    "clang-format.formatOnSave": true
+}
