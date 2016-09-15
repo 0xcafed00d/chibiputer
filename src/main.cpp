@@ -4,19 +4,19 @@ int commons[] = {9, 10, 11, 12};
 int segments[] = {A0, A1, A2, A3, A4, A5, 3, 4};
 int padcols[] = {8, 7, 6, 5, 2};
 
-void setupDisp() {
+void setupIO() {
+	// set all common select lines to high inpedence inputs
 	for (int n = 0; n < 4; n++) {
 		pinMode(commons[n], INPUT);
 	}
 
+	// set all segment lines to lo output
 	for (int n = 0; n < 8; n++) {
 		pinMode(segments[n], OUTPUT);
 		digitalWrite(segments[n], 0);
 	}
-}
 
-void setupPad() {
-	for (int n = 0; n < 4; n++) {
+	for (int n = 0; n < 5; n++) {
 		pinMode(padcols[n], INPUT_PULLUP);
 	}
 }
