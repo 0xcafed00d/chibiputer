@@ -2,6 +2,25 @@
 
 #include "chibi_io.h"
 
+static const uint8_t hexPatterns[] = {
+    0b11111100,  // 0
+    0b01100000,  // 1
+    0b11011010,  // 2
+    0b11110010,  // 3
+    0b01100110,  // 4
+    0b10110110,  // 5
+    0b10111110,  // 6
+    0b11100000,  // 7
+    0b11111110,  // 8
+    0b11110110,  // 9
+    0b11101110,  // a
+    0b00111110,  // b
+    0b10011100,  // c
+    0b01111010,  // d
+    0b10011110,  // e
+    0b10001110   // f
+};
+
 namespace Chibi {
 
 	void IO::init(int* commons, int* segments, int* padcols) {
@@ -9,9 +28,26 @@ namespace Chibi {
 		m_segments = segments;
 		m_padcols = padcols;
 		m_currentDigit = 0;
+		clearDisplay();
+		setup();
 	}
 
-	void IO::displayChar(int digit, char value, bool dp) {
+	void IO::clearDisplay() {
+		memset(m_digits, 0, sizeof(m_digits));
+	}
+
+	void IO::displayDigit(int digit, int value, bool dp) {
+		if (value >= 0 && value <= 16) {
+			m_digits[digit & 3] = hexPatterns[value & 0xf];
+		} else {
+			m_digits[digit & 3] = 7;
+		}
+	}
+
+	void IO::displayHexValue(int cal) {
+		for (int n = 0; n < 4; n++) {
+			displayDigit(3 - n, (cal >> 4 * n) & 0xf, false);
+		}
 	}
 
 	void IO::update() {
@@ -53,14 +89,13 @@ namespace Chibi {
 	}
 
 	void IO::selectSegments(int s) {
-		s++;
 		for (int n = 0; n < 8; n++) {
-			if (s & 1) {
+			if (s & 0x80) {
 				digitalWrite(m_segments[n], 1);
 			} else {
 				digitalWrite(m_segments[n], 0);
 			}
-			s = s >> 1;
+			s = s << 1;
 		}
 	}
 

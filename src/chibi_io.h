@@ -7,7 +7,9 @@ namespace Chibi {
 	class IO {
 	  public:
 		void init(int* commons, int* segments, int* padcols);
-		void displayChar(int digit, char value, bool dp);
+		void clearDisplay();
+		void displayDigit(int digit, int value, bool dp);
+		void displayHexValue(int value);
 		void update();
 
 	  private:
