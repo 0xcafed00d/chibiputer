@@ -36,18 +36,35 @@ namespace Chibi {
 		memset(m_digits, 0, sizeof(m_digits));
 	}
 
-	void IO::displayDigit(int digit, int value, bool dp) {
+	void IO::displayDigit(int index, int value, bool dp) {
 		if (value >= 0 && value <= 16) {
-			m_digits[digit & 3] = hexPatterns[value & 0xf];
+			m_digits[index & 3] = hexPatterns[value & 0xf];
 		} else {
-			m_digits[digit & 3] = 7;
+			m_digits[index & 3] = 7;  // underscore invalid digit.
 		}
 	}
 
-	void IO::displayHexValue(int cal) {
+	void IO::displayHexValue(int val) {
 		for (int n = 0; n < 4; n++) {
-			displayDigit(3 - n, (cal >> 4 * n) & 0xf, false);
+			displayDigit(n, (val >> 4 * n) & 0xf, false);
 		}
+	}
+
+	void IO::setDP(int index, bool on) {
+		if (on) {
+			m_digits[index & 3] |= 0x80;
+		} else {
+			m_digits[index & 3] &= 0x7f;
+		}
+	}
+
+	void IO::displayByte(int index, uint8_t value) {
+		displayDigit(index * 2 + 1, value >> 4, false);
+		displayDigit(index * 2, value & 0xf, false);
+	}
+
+	void IO::displayPattern(int index, uint8_t pattern) {
+		m_digits[index & 3] = pattern;
 	}
 
 	void IO::update() {

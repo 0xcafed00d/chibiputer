@@ -8,8 +8,11 @@ namespace Chibi {
 	  public:
 		void init(int* commons, int* segments, int* padcols);
 		void clearDisplay();
-		void displayDigit(int digit, int value, bool dp);
+		void displayDigit(int digit, int value, bool dp = false);
+		void setDP(int digit, bool on);
 		void displayHexValue(int value);
+		void displayByte(int index, uint8_t value);
+		void displayPattern(int index, uint8_t pattern);
 		void update();
 
 	  private:
@@ -24,6 +27,8 @@ namespace Chibi {
 		int* m_padcols;
 		int m_currentDigit;
 		uint8_t m_digits[4];
+		uint8_t m_keymap[5];
+		uint8_t m_prevKeyMap[5];
 	};
 }
 
