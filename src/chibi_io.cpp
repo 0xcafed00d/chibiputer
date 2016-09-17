@@ -71,9 +71,12 @@ namespace Chibi {
 		selectDigit(-1);
 		selectSegments(m_digits[m_currentDigit]);
 		selectDigit(m_currentDigit);
-		processPad(m_currentDigit, readPad());
+		processPadRow(m_currentDigit, readPad());
 
 		m_currentDigit = (m_currentDigit + 1) & 3;
+		if (m_currentDigit == 0) {
+			processPad();
+		}
 	}
 
 	void IO::setup() {
@@ -126,6 +129,14 @@ namespace Chibi {
 		return res;
 	}
 
-	void IO::processPad(int row, int pressed) {
+	bool testKeyState(uint8_t scanCode) {
+		uint8_t i = scanCode % 5;
+	}
+
+	void IO::processPadRow(int row, int pressed) {
+		m_row
+	}
+
+	void IO::processPad() {
 	}
 }
