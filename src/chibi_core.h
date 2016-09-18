@@ -34,8 +34,8 @@
     0xA?	SETA   	SET A			A = [BANK0[?]]; FLAG = (A == 0); PC++
     0xB?	PUTA	PUT A			[BANK0[?]] = A; FLAG = (A == 0); PC++
     0xC?	??
-    0xD?	INCT	INC IF TRUE		IF (FLAG) PC++; PC++
-    0xE?	INCF    INC IF FALSE	IF (!FLAG) PC++; PC++
+    0xD?	INCT	INC IF TRUE		IF (FLAG) INC; PC++
+    0xE?	INCF    INC IF FALSE	IF (!FLAG) DEC; PC++
     0xF?	CALL 	Call builtin
 */
 
@@ -74,8 +74,8 @@ namespace Chibi {
 		void poke(uint8_t addr, uint8_t);
 
 	  private:
-		uint8_t setFlagOnOverFlow(uint16_t v);
-		uint8_t setFlagOnZero(uint8_t v);
+		uint8_t flagOV(uint16_t v);
+		uint8_t flagZ(uint8_t v);
 
 		uint8_t m_ram[256];
 	};
