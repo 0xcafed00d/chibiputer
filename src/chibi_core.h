@@ -74,6 +74,9 @@ namespace Chibi {
 		void poke(uint8_t addr, uint8_t);
 
 	  private:
+		uint8_t setFlagOnOverFlow(uint16_t v);
+		uint8_t setFlagOnZero(uint8_t v);
+
 		uint8_t m_ram[256];
 	};
 }

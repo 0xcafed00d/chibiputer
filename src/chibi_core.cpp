@@ -24,13 +24,15 @@ namespace Chibi {
 		switch (opcode) {
 			case OPCODE_LOADC:
 				m_ram[index] = m_ram[pc + 1];
-				pc++;
+				pc += 2;
 				break;
 			case OPCODE_LOADA:
-				m_ram[ADDR_A] = m_ram[index];
+				m_ram[ADDR_A] = setFlagOnZero(m_ram[index]);
+				pc++;
 				break;
 			case OPCODE_STORA:
-				m_ram[index] = m_ram[ADDR_A];
+				m_ram[index] = setFlagOnZero(m_ram[ADDR_A]);
+				pc++;
 				break;
 			case OPCODE_INC:
 				break;
@@ -60,6 +62,14 @@ namespace Chibi {
 				break;
 		}
 		pc++;
+	}
+
+	uint8_t Core::setFlagOnOverFlow(uint16_t v) {
+		return (uint8_t)v;
+	}
+
+	uint8_t Core::setFlagOnZero(uint8_t v) {
+		return v;
 	}
 
 	uint8_t Core::peek(uint8_t addr) {
