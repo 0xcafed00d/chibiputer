@@ -14,6 +14,7 @@ Chibi::Monitor monitor;
 void setup() {
 	Serial.begin(9600);
 	io.init(commons, segments, padcols);
+	core.reset(true);
 }
 
 int val = 0;

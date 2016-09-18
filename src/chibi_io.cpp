@@ -134,7 +134,6 @@ namespace Chibi {
 	}
 
 	void IO::processPadRow(int row, int pressed) {
-		m_row
 	}
 
 	void IO::processPad() {
