@@ -28,8 +28,13 @@ namespace Chibi {
 		m_segments = segments;
 		m_padcols = padcols;
 		m_currentDigit = 0;
+		m_keyreceiver = NULL;
 		clearDisplay();
 		setup();
+	}
+
+	void IO::setKeyReceiver(KeyReceiver* kr) {
+		m_keyreceiver = kr;
 	}
 
 	void IO::clearDisplay() {
@@ -119,8 +124,8 @@ namespace Chibi {
 		}
 	}
 
-	int IO::readPad() {
-		int res = 0;
+	uint8_t IO::readPad() {
+		uint8_t res = 0;
 		for (int n = 0; n < 5; n++) {
 			if (digitalRead(m_padcols[n]) == 0) {
 				res = res | (1 << n);
@@ -134,6 +139,8 @@ namespace Chibi {
 	}
 
 	void IO::processPadRow(int row, int pressed) {
+		uint8_t padrow = readPad();
+		m_digits[row] = padrow;
 	}
 
 	void IO::processPad() {

@@ -20,9 +20,6 @@ void setup() {
 int val = 0;
 
 void loop() {
-	io.displayHexValue(val++);
-	io.displayByte(0, 0xf5);
-	io.displayByte(1, 0xbe);
 	io.update();
 	delay(1);
 }

@@ -28,9 +28,14 @@ namespace Chibi {
 	const uint8_t KEY_EX3 = 19;
 	const uint8_t KEY_EX4 = 20;
 
+	struct KeyReceiver {
+		virtual void onKey(uint8_t scancode, bool pressed) = 0;
+	};
+
 	class IO {
 	  public:
 		void init(int* commons, int* segments, int* padcols);
+		void setKeyReceiver(KeyReceiver* kr);
 		void update();
 
 		// display functions
@@ -48,7 +53,7 @@ namespace Chibi {
 		void setup();
 		void selectDigit(int d);
 		void selectSegments(int s);
-		int readPad();
+		uint8_t readPad();
 		void processPadRow(int row, int pressed);
 		void processPad();
 
@@ -59,6 +64,7 @@ namespace Chibi {
 		uint8_t m_digits[4];
 		uint8_t m_keymap[4];
 		uint8_t m_newKeymap[4];
+		KeyReceiver* m_keyreceiver;
 	};
 }
 
