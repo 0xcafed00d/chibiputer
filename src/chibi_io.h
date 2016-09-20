@@ -46,9 +46,6 @@ namespace Chibi {
 		void displayByte(int index, uint8_t value);
 		void displayPattern(int index, uint8_t pattern);
 
-		// keypad functions
-		bool testKeyState(uint8_t scanCode);
-
 	  private:
 		void setup();
 		void selectDigit(int d);

@@ -134,15 +134,23 @@ namespace Chibi {
 		return res;
 	}
 
-	bool testKeyState(uint8_t scanCode) {
-		uint8_t i = scanCode % 5;
-	}
-
 	void IO::processPadRow(int row, int pressed) {
-		uint8_t padrow = readPad();
-		m_digits[row] = padrow;
+		m_newKeymap[row] = readPad();
 	}
 
 	void IO::processPad() {
+		for (uint8_t row = 0; row < 4; row++) {
+			for (uint8_t col = 0; col < 5; col++) {
+				uint8_t scanCode = row * 5 + col;
+				uint8_t mask = 1 << col;
+
+				if ((m_keymap[row] & mask) != (m_newKeymap[row] & mask)) {
+					m_keyreceiver->onKey(scanCode, (bool)(m_newKeymap[row] & mask));
+				}
+			}
+		}
+
+		for (int n = 0; n < 4; n++)
+			m_keymap[n] = m_newKeymap[n];
 	}
 }
