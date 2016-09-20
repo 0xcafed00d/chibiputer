@@ -139,13 +139,15 @@ namespace Chibi {
 	}
 
 	void IO::processPad() {
-		for (uint8_t row = 0; row < 4; row++) {
-			for (uint8_t col = 0; col < 5; col++) {
-				uint8_t scanCode = row * 5 + col;
-				uint8_t mask = 1 << col;
+		if (m_keyreceiver != NULL) {
+			for (uint8_t row = 0; row < 4; row++) {
+				for (uint8_t col = 0; col < 5; col++) {
+					uint8_t scanCode = row * 5 + col;
+					uint8_t mask = 1 << col;
 
-				if ((m_keymap[row] & mask) != (m_newKeymap[row] & mask)) {
-					m_keyreceiver->onKey(scanCode, (bool)(m_newKeymap[row] & mask));
+					if ((m_keymap[row] & mask) != (m_newKeymap[row] & mask)) {
+						m_keyreceiver->onKey(scanCode, (bool)(m_newKeymap[row] & mask));
+					}
 				}
 			}
 		}

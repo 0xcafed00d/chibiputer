@@ -15,11 +15,11 @@ void setup() {
 	Serial.begin(9600);
 	io.init(commons, segments, padcols);
 	core.reset(true);
+	monitor.init(&io, &core);
 }
 
-int val = 0;
-
 void loop() {
+	monitor.update();
 	io.update();
 	delay(1);
 }
