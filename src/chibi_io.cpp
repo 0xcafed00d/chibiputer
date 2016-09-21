@@ -21,9 +21,12 @@ static const uint8_t hexPatterns[] = {
     0b10001110   // f
 };
 
-namespace Chibi {
+static const uint8_t keyValues[] = {0x83, 0x0f, 0x0e, 0x0d, 0x0c, 0x82, 0x0b, 0x0a, 0x09, 0x08,
+                                    0x81, 0x07, 0x06, 0x05, 0x04, 0x80, 0x03, 0x02, 0x01, 0x00};
 
+namespace Chibi {
 	void IO::init(int* commons, int* segments, int* padcols) {
+		memset(this, 0, sizeof(*this));
 		m_commons = commons;
 		m_segments = segments;
 		m_padcols = padcols;
@@ -45,7 +48,7 @@ namespace Chibi {
 		if (value >= 0 && value <= 16) {
 			m_digits[index & 3] = hexPatterns[value & 0xf];
 		} else {
-			m_digits[index & 3] = 7;  // underscore invalid digit.
+			m_digits[index & 3] = 16;  // underscore invalid digit.
 		}
 	}
 
@@ -73,14 +76,17 @@ namespace Chibi {
 	}
 
 	void IO::update() {
-		selectDigit(-1);
-		selectSegments(m_digits[m_currentDigit]);
-		selectDigit(m_currentDigit);
-		processPadRow(m_currentDigit, readPad());
+		if (m_scanTimer.hasTimedOut()) {
+			selectDigit(-1);
+			selectSegments(m_digits[m_currentDigit]);
+			selectDigit(m_currentDigit);
+			processPadRow(m_currentDigit, readPad());
 
-		m_currentDigit = (m_currentDigit + 1) & 3;
-		if (m_currentDigit == 0) {
-			processPad();
+			m_currentDigit = (m_currentDigit + 1) & 3;
+			if (m_currentDigit == 0) {
+				processPad();
+			}
+			m_scanTimer = TimeOutus(3000);
 		}
 	}
 
@@ -146,7 +152,8 @@ namespace Chibi {
 					uint8_t mask = 1 << col;
 
 					if ((m_keymap[row] & mask) != (m_newKeymap[row] & mask)) {
-						m_keyreceiver->onKey(scanCode, (bool)(m_newKeymap[row] & mask));
+						m_keyreceiver->onKey(scanCode, keyValues[scanCode],
+						                     (bool)(m_newKeymap[row] & mask));
 					}
 				}
 			}

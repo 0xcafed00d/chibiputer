@@ -3,17 +3,16 @@
 
 #include <Arduino.h>
 #include "chibi_io.h"
+#include "chibi_core.h"
 
 namespace Chibi {
-	class IO;
-	class Core;
 
 	class Monitor : public KeyReceiver {
 	  public:
 		void init(IO* io, Core* core);
 		void update();
 
-		virtual void onKey(uint8_t scancode, bool pressed);
+		virtual void onKey(uint8_t scancode, uint8_t value, bool pressed);
 
 	  private:
 		Core* m_core;

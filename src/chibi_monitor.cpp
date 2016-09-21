@@ -1,7 +1,5 @@
 #include <Arduino.h>
 #include "chibi_monitor.h"
-#include "chibi_io.h"
-#include "chibi_core.h"
 
 namespace Chibi {
 
@@ -15,9 +13,12 @@ namespace Chibi {
 	void Monitor::update() {
 	}
 
-	void Monitor::onKey(uint8_t scancode, bool pressed) {
-		Serial.print(scancode);
-		Serial.print("->");
-		Serial.println(pressed ? "down" : "up");
+	int pos = 0;
+
+	void Monitor::onKey(uint8_t scancode, uint8_t value, bool pressed) {
+		if (pressed) {
+			m_io->displayDigit(pos, value, false);
+			pos = (pos + 1) & 3;
+		}
 	}
 }

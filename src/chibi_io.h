@@ -2,13 +2,13 @@
 #define CHIBI_IO_H
 
 #include <Arduino.h>
-
+#include "timeout.h"
 /*
- Keylayout:
-    0 1 2 3   Ext0
-    4 5 6 7	  Ext1
-    8 9 A B	  Ext2
-    C D E F   Ext3
+Keylayout:
+0 1 2 3   Ext0
+4 5 6 7	  Ext1
+8 9 A B	  Ext2
+C D E F   Ext3
 */
 
 namespace Chibi {
@@ -36,7 +36,7 @@ namespace Chibi {
 	const uint8_t KEY_EX3 = 0;
 
 	struct KeyReceiver {
-		virtual void onKey(uint8_t scancode, bool pressed) = 0;
+		virtual void onKey(uint8_t scancode, uint8_t value, bool pressed) = 0;
 	};
 
 	class IO {
@@ -69,6 +69,7 @@ namespace Chibi {
 		uint8_t m_keymap[4];
 		uint8_t m_newKeymap[4];
 		KeyReceiver* m_keyreceiver;
+		TimeOutus m_scanTimer;
 	};
 }
 

@@ -21,5 +21,4 @@ void setup() {
 void loop() {
 	monitor.update();
 	io.update();
-	delay(1);
 }
