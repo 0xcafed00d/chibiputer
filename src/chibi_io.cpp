@@ -34,6 +34,7 @@ namespace Chibi {
 		m_keyreceiver = NULL;
 		clearDisplay();
 		setup();
+		m_scanTimer = TimeOutus(3000);
 	}
 
 	void IO::setKeyReceiver(KeyReceiver* kr) {
@@ -60,9 +61,9 @@ namespace Chibi {
 
 	void IO::setDP(int index, bool on) {
 		if (on) {
-			m_digits[index & 3] |= 0x80;
+			m_digits[index & 3] |= 0x01;
 		} else {
-			m_digits[index & 3] &= 0x7f;
+			m_digits[index & 3] &= 0xfe;
 		}
 	}
 
@@ -86,7 +87,7 @@ namespace Chibi {
 			if (m_currentDigit == 0) {
 				processPad();
 			}
-			m_scanTimer = TimeOutus(3000);
+			m_scanTimer.reset();
 		}
 	}
 

@@ -13,8 +13,12 @@ class TimeOutus {
 		m_period = timeoutus;
 	}
 
+	void reset() {
+		m_start = (uint32_t)micros();
+	}
+
 	bool hasTimedOut() const {
-		return (micros() - m_start) < m_period;
+		return (micros() - m_start) > m_period;
 	}
 };
 
@@ -28,8 +32,12 @@ class TimeOutms {
 		m_period = timeoutms;
 	}
 
+	void reset() {
+		m_start = (uint32_t)millis();
+	}
+
 	bool hasTimedOut() const {
-		return (millis() - m_start) < m_period;
+		return (millis() - m_start) > m_period;
 	}
 };
 
