@@ -61,20 +61,9 @@ namespace Chibi {
 			case OPCODE_PUTA:
 				m_ram[m_ram[index]] = flagZ(m_ram[ADDR_A]);
 				break;
-			case OPCODE_NONE:
-				break;
-			case OPCODE_INCT:
-				if (m_ram[ADDR_FLAGS] & 1)
-					m_ram[m_ram[index]] = flagOV(uint16_t(m_ram[m_ram[index]]) + 1);
-				break;
-			case OPCODE_INCF:
-				if (!(m_ram[ADDR_FLAGS] & 1))
-					m_ram[m_ram[index]] = flagOV(uint16_t(m_ram[m_ram[index]]) + 1);
-				break;
 			case OPCODE_CALL:
 				break;
 		}
-		pc++;
 	}
 
 	uint8_t Core::flagOV(uint16_t v) {
