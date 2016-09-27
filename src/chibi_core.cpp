@@ -18,6 +18,7 @@ namespace Chibi {
 
 	void Core::exec() {
 		uint8_t& pc = m_ram[ADDR_PC];
+		uint8_t& sp = m_ram[ADDR_SP];
 		uint8_t opcode = m_ram[pc] >> 4;
 		uint8_t index = m_ram[pc] & 0x0f;
 
@@ -28,11 +29,13 @@ namespace Chibi {
 				m_ram[index] = m_ram[pc + 1];
 				pc++;
 				break;
-			case OPCODE_LOADA:
-				m_ram[ADDR_A] = flagZ(m_ram[index]);
+			case OPCODE_PUSH:
+				m_ram[sp] = flagZ(m_ram[m_ram[index]]);
+				sp--;
 				break;
-			case OPCODE_STORA:
-				m_ram[index] = flagZ(m_ram[ADDR_A]);
+			case OPCODE_POP:
+				sp++;
+				m_ram[m_ram[index]] = flagZ(m_ram[sp]);
 				break;
 			case OPCODE_INC:
 				m_ram[m_ram[index]] = flagOV(uint16_t(m_ram[m_ram[index]]) + 1);
