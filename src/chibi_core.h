@@ -1,7 +1,7 @@
 #ifndef CHIBI_CORE_H
 #define CHIBI_CORE_H
 
-#include <Arduino.h>
+#include <stdint.h>
 
 /*
     MEMORY MAP:

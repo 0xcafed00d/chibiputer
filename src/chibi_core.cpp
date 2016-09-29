@@ -1,5 +1,5 @@
-#include <Arduino.h>
 #include "chibi_core.h"
+#include <string.h>
 
 namespace Chibi {
 
@@ -9,7 +9,7 @@ namespace Chibi {
 		} else {
 			memset(m_ram, 0, 16);
 		}
-		m_ram[ADDR_PC] = 0x0f;
+		m_ram[ADDR_PC] = 0x10;
 		m_ram[ADDR_SP] = 0xff;
 
 		for (int n = 0; n < 8; n++)
