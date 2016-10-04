@@ -26,7 +26,7 @@ namespace Chibi {
 
 		switch (opcode) {
 			case OPCODE_LOADC:
-				m_ram[index] = m_ram[pc + 1];
+				m_ram[index] = m_ram[pc];
 				pc++;
 				break;
 			case OPCODE_PUSH:

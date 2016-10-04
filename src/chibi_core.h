@@ -16,7 +16,7 @@
 
     ON RUN:
     BANK0 = {0}
-    PC = 0F
+    PC = 10
     SP = FF
     BANK0[8-F] = {0 ... 7}
 
@@ -50,6 +50,15 @@ namespace Chibi {
 		static const uint8_t ADDR_X = 5;
 		static const uint8_t ADDR_Y = 6;
 		static const uint8_t ADDR_Z = 7;
+
+		static const uint8_t X_ADDR_PC = 8;
+		static const uint8_t X_ADDR_FLAGS = 9;
+		static const uint8_t X_ADDR_A = 10;
+		static const uint8_t X_ADDR_SP = 11;
+		static const uint8_t X_ADDR_W = 12;
+		static const uint8_t X_ADDR_X = 13;
+		static const uint8_t X_ADDR_Y = 14;
+		static const uint8_t X_ADDR_Z = 15;
 
 		static const uint8_t OPCODE_LOADC = 0x0;
 		static const uint8_t OPCODE_PUSH = 0x1;
