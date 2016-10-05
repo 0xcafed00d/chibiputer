@@ -31,9 +31,9 @@
     0x7?	AND						A &= [BANK0[?]]; FLAG = (A == 0); PC++
     0x8?	OR						A |= [BANK0[?]]; FLAG = (A == 0); PC++
     0x9?	NOT						[BANK0[?]] = ![BANK0[?]]; FLAG = ([BANK0[?]] == 0); PC++
-    0xA?	SETA   	SET A			A = [BANK0[?]]; FLAG = (A == 0); PC++
-    0xB?	PUTA	PUT A			[BANK0[?]] = A; FLAG = (A == 0); PC++
-    0xC?	??
+    0xA?	XOR						A ^= [BANK0[?]]; FLAG = (A == 0); PC++
+    0xB?	SETA   	SET A			A = [BANK0[?]]; FLAG = (A == 0); PC++
+    0xC?	PUTA	PUT A			[BANK0[?]] = A; FLAG = (A == 0); PC++
     0xD?	??
     0xE?	??
     0xF?	CALL 	Call builtin
@@ -70,11 +70,11 @@ namespace Chibi {
 		static const uint8_t OPCODE_AND = 0x7;
 		static const uint8_t OPCODE_OR = 0x8;
 		static const uint8_t OPCODE_NOT = 0x9;
-		static const uint8_t OPCODE_SETA = 0xa;
-		static const uint8_t OPCODE_PUTA = 0xb;
-		static const uint8_t OPCODE_NONE1 = 0xc;
-		static const uint8_t OPCODE_NONE2 = 0xd;
-		static const uint8_t OPCODE_NONE3 = 0xe;
+		static const uint8_t OPCODE_XOR = 0xa;
+		static const uint8_t OPCODE_SETA = 0xb;
+		static const uint8_t OPCODE_PUTA = 0xc;
+		static const uint8_t OPCODE_NONE1 = 0xd;
+		static const uint8_t OPCODE_NONE2 = 0xe;
 		static const uint8_t OPCODE_CALL = 0xf;
 
 		void reset(bool clearMem = false);

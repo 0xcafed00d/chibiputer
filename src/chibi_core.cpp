@@ -26,7 +26,7 @@ namespace Chibi {
 
 		switch (opcode) {
 			case OPCODE_LOADC:
-				m_ram[index] = m_ram[pc];
+				m_ram[index] = flagZ(m_ram[pc]);
 				pc++;
 				break;
 			case OPCODE_PUSH:
@@ -57,6 +57,9 @@ namespace Chibi {
 				break;
 			case OPCODE_NOT:
 				m_ram[m_ram[index]] = flagZ(~m_ram[m_ram[index]]);
+				break;
+			case OPCODE_XOR:
+				m_ram[ADDR_A] = flagOV(uint16_t(m_ram[m_ram[index]]) ^ uint16_t(m_ram[ADDR_A]));
 				break;
 			case OPCODE_SETA:
 				m_ram[ADDR_A] = flagZ(m_ram[m_ram[index]]);
