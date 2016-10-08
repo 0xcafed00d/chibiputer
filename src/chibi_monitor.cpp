@@ -10,6 +10,8 @@ namespace Chibi {
 		m_cursorTime = TimeOutms(500);
 
 		io->setKeyReceiver(this);
+		m_objPtr = this;
+		stateGoto(&Monitor::stateWaitCmd);
 	}
 
 	void Monitor::update() {
@@ -35,5 +37,12 @@ namespace Chibi {
 		} else {
 			m_io->setDP(0, false);
 		}
+	}
+
+	void Monitor::stateWaitCmd() {
+	}
+	void Monitor::stateAddressInput() {
+	}
+	void Monitor::stateDataInput() {
 	}
 }
