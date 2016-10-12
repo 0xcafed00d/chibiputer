@@ -3,6 +3,9 @@
 
 namespace Chibi {
 
+	Monitor::Monitor() : StateMachine(this) {
+	}
+
 	void Monitor::init(IO* io, Core* core) {
 		m_core = core;
 		m_io = io;
@@ -10,7 +13,6 @@ namespace Chibi {
 		m_cursorTime = TimeOutms(500);
 
 		io->setKeyReceiver(this);
-		m_objPtr = this;
 		stateGoto(&Monitor::stateWaitCmd);
 	}
 
