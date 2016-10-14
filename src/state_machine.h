@@ -4,14 +4,17 @@
 template <typename objType>
 struct StateMachine {
   public:
-	StateMachine(objType* objPtr) : m_objPtr(objPtr) {
+	StateMachine(objType* objPtr)
+	    : m_objPtr(objPtr), m_stateEnter(false), m_stateLeave(false), m_stateUpdate(false) {
 	}
 
 	typedef void (objType::*stateFunction_t)();
 
 	void stateUpdate() {
 		if (m_currentState) {
+			m_stateUpdate = true;
 			(m_objPtr->*m_currentState)();
+			m_stateUpdate = false;
 		}
 	}
 
@@ -21,6 +24,10 @@ struct StateMachine {
 
 	bool leave() const {
 		return m_stateLeave;
+	}
+
+	bool update() const {
+		return m_stateUpdate;
 	}
 
 	void stateGoto(stateFunction_t state) {
@@ -43,6 +50,7 @@ struct StateMachine {
 	stateFunction_t m_currentState;
 	bool m_stateEnter;
 	bool m_stateLeave;
+	bool m_stateUpdate;
 	objType* m_objPtr;
 };
 
