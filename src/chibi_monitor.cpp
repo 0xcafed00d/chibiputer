@@ -42,29 +42,29 @@ namespace Chibi {
 	}
 
 	void Monitor::stateWaitCmd() {
-		if (enter()) {
+		if (entering()) {
 		}
-		if (update()) {
+		if (updating()) {
 		}
-		if (leave()) {
+		if (leaving()) {
 		}
 	}
 
 	void Monitor::stateAddressInput() {
-		if (enter()) {
+		if (entering()) {
 		}
-		if (update()) {
+		if (updating()) {
 		}
-		if (leave()) {
+		if (leaving()) {
 		}
 	}
 
 	void Monitor::stateDataInput() {
-		if (enter()) {
+		if (entering()) {
 		}
-		if (update()) {
+		if (updating()) {
 		}
-		if (leave()) {
+		if (leaving()) {
 		}
 	}
 }
