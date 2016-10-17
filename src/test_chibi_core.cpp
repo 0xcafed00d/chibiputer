@@ -1,12 +1,14 @@
 
 #include "chibi_core.cpp"
+#include "state_machine.h"
 
 #include <iostream>
 #include <assert.h>
+#include <string>
 
 using namespace Chibi;
 
-bool equals(const uint8_t& got, const uint8_t& expected) {
+bool equals(uint8_t got, uint8_t expected) {
 	if (got != expected) {
 		std::cerr << std::hex << "expected: " << (uint16_t)expected << "  got: " << (uint16_t)got
 		          << "  : ";
@@ -15,8 +17,71 @@ bool equals(const uint8_t& got, const uint8_t& expected) {
 	return true;
 }
 
+bool equals(std::string got, std::string expected) {
+	if (got != expected) {
+		std::cerr << std::hex << "expected: " << expected << "  got: " << got << "  : ";
+		return false;
+	}
+	return true;
+}
+
 void writeOpcode(Core& core, uint8_t addr, uint8_t opcode, uint8_t index) {
 	core.poke(addr, (opcode << 4) | (index & 0xf));
+}
+
+struct TestStateMachine : public StateMachine<TestStateMachine> {
+	TestStateMachine() : StateMachine(this) {
+	}
+
+	void state1() {
+		if (entering()) {
+			std::cout << " state1::enter" << std::endl;
+			m_trace += "s1e ";
+		}
+		if (updating()) {
+			std::cout << " state1::update" << std::endl;
+			m_trace += "s1u ";
+		}
+		if (leaving()) {
+			std::cout << " state1::leave" << std::endl;
+			m_trace += "s1l ";
+		}
+	}
+
+	void state2() {
+		if (entering()) {
+			std::cout << " state2::enter" << std::endl;
+			m_trace += "s2e ";
+		}
+		if (updating()) {
+			std::cout << " state2::update" << std::endl;
+			m_trace += "s2u ";
+		}
+		if (leaving()) {
+			std::cout << " state2::leave" << std::endl;
+			m_trace += "s2l ";
+		}
+	}
+
+	std::string m_trace;
+};
+
+void test_state_machine() {
+	std::cout << "Start StateMachine Test" << std::endl;
+	TestStateMachine t;
+	t.stateUpdate();
+	t.stateGoto(&TestStateMachine::state1);
+	t.stateUpdate();
+	t.stateGoto(&TestStateMachine::state2);
+	t.stateUpdate();
+	t.stateGoto(&TestStateMachine::state1);
+	t.stateUpdate();
+	t.stateGoto(0);
+	t.stateUpdate();
+
+	assert(equals(t.m_trace, "s1e s1u s1l s2e s2u s2l s1e s1u s1l "));
+
+	std::cout << "End StateMachine Test" << std::endl;
 }
 
 void test_chibi_core() {
@@ -73,4 +138,5 @@ void test_chibi_core() {
 
 int main(int argc, char** argv) {
 	test_chibi_core();
+	test_state_machine();
 }
