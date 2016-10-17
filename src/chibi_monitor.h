@@ -27,6 +27,8 @@ namespace Chibi {
 		IO* m_io;
 		int m_cursorPos;
 		TimeOutms m_cursorTime;
+		uint8_t m_lastKey;
+		uint8_t m_currentAddr;
 	};
 }
 

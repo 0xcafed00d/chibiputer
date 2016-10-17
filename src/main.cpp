@@ -19,6 +19,6 @@ void setup() {
 }
 
 void loop() {
-	monitor.update();
 	io.update();
+	monitor.update();
 }
