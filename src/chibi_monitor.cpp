@@ -3,7 +3,11 @@
 
 namespace Chibi {
 
-	Monitor::Monitor() : StateMachine(this), m_lastKey(0xff), m_currentAddr(0x10) {
+	StateMachine<Monitor>::stateFunction_t Monitor::m_commands[16] = {
+	    0, &Monitor::stateAddressInput, &Monitor::stateDataInput};
+
+	Monitor::Monitor()
+	    : StateMachine(this), m_cursorBlink(false), m_lastKey(0xff), m_currentAddr(0x10) {
 	}
 
 	void Monitor::init(IO* io, Core* core) {
@@ -13,7 +17,7 @@ namespace Chibi {
 		m_cursorTime = TimeOutms(250);
 
 		io->setKeyReceiver(this);
-		stateGoto(&Monitor::stateWaitCmd);
+		stateGoto(&Monitor::stateCommand);
 	}
 
 	void Monitor::update() {
@@ -28,36 +32,40 @@ namespace Chibi {
 
 	void Monitor::updateCursor() {
 		if (m_cursorPos != -1) {
+			m_io->setDP(m_cursorPos & 3, m_cursorBlink);
 			if (m_cursorTime.hasTimedOut()) {
 				m_cursorTime.reset();
-				m_io->setDP(m_cursorPos & 3, (m_cursorPos & 0x80) == 0);
-				m_cursorPos ^= 0x80;
+				m_cursorBlink = !m_cursorBlink;
 			}
 		} else {
 			m_io->setDP(0, false);
 		}
 	}
 
-	void Monitor::stateWaitCmd(Phase_t p) {
+	void Monitor::stateCommand(Phase_t p) {
+		static uint8_t command;
 		if (p == Enter) {
 			m_io->clearDisplay();
 			m_io->displayDigit(3, 0xc);
 			m_cursorPos = 0;
+			command = 0;
 		}
 		if (p == Update) {
 			updateCursor();
 			if (m_lastKey != 0xff) {
 				if (m_lastKey < 0x10) {
 					m_io->displayDigit(0, m_lastKey);
+					command = m_lastKey;
 				}
-				if (m_lastKey == 0x83) {
-					stateGoto(&Monitor::stateAddressInput);
+				if (m_lastKey == KEY_ENTER) {
+					if (m_commands[command]) {
+						stateGoto(m_commands[command]);
+					}
 				}
 				m_lastKey = 0xff;
 			}
 		}
 		if (p == Leave) {
-			m_io->clearDisplay();
 		}
 	}
 
@@ -68,21 +76,33 @@ namespace Chibi {
 			m_cursorPos = 1;
 		}
 		if (p == Update) {
+			m_io->displayByte(0, m_currentAddr);
 			updateCursor();
 
 			if (m_lastKey != 0xff) {
 				if (m_lastKey < 0x10) {
-					m_io->displayDigit(m_cursorPos, m_lastKey);
+					if (m_cursorPos == 0) {
+						m_currentAddr &= 0xf0;
+						m_currentAddr |= m_lastKey;
+					} else {
+						m_currentAddr &= 0x0f;
+						m_currentAddr |= (m_lastKey << 4);
+					}
 					m_cursorPos = (m_cursorPos - 1) & 1;
 				}
-				if (m_lastKey == 0x83) {
-					stateGoto(&Monitor::stateWaitCmd);
+				if (m_lastKey == KEY_ENTER || m_lastKey == KEY_CMD) {
+					stateGoto(&Monitor::stateCommand);
+				}
+				if (m_lastKey == KEY_UP) {
+					m_currentAddr++;
+				}
+				if (m_lastKey == KEY_DOWN) {
+					m_currentAddr--;
 				}
 				m_lastKey = 0xff;
 			}
 		}
 		if (p == Leave) {
-			m_io->clearDisplay();
 		}
 	}
 
@@ -92,19 +112,36 @@ namespace Chibi {
 			m_cursorPos = 1;
 		}
 		if (p == Update) {
-			updateCursor();
 			m_io->displayByte(1, m_currentAddr);
+			m_io->displayByte(0, m_core->peek(m_currentAddr));
+			updateCursor();
 
 			if (m_lastKey != 0xff) {
 				if (m_lastKey < 0x10) {
-					m_io->displayDigit(m_cursorPos, m_lastKey);
+					uint8_t data = m_core->peek(m_currentAddr);
+					if (m_cursorPos == 0) {
+						data &= 0xf0;
+						data |= m_lastKey;
+					} else {
+						data &= 0x0f;
+						data |= (m_lastKey << 4);
+					}
+					m_core->poke(m_currentAddr, data);
 					m_cursorPos = (m_cursorPos - 1) & 1;
+				}
+				if (m_lastKey == KEY_CMD) {
+					stateGoto(&Monitor::stateCommand);
+				}
+				if (m_lastKey == KEY_UP || m_lastKey == KEY_ENTER) {
+					m_currentAddr++;
+				}
+				if (m_lastKey == KEY_DOWN) {
+					m_currentAddr--;
 				}
 				m_lastKey = 0xff;
 			}
 		}
 		if (p == Leave) {
-			m_io->clearDisplay();
 		}
 	}
 }
