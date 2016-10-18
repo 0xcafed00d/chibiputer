@@ -4,54 +4,34 @@
 template <typename objType>
 struct StateMachine {
   public:
-	StateMachine(objType* objPtr)
-	    : m_currentState(0), m_objPtr(objPtr), m_stateEnter(false), m_stateLeave(false), m_stateUpdate(false) {
+	enum Phase_t { None, Enter, Update, Leave };
+
+	StateMachine(objType* objPtr) : m_currentState(0), m_objPtr(objPtr) {
 	}
 
-	typedef void (objType::*stateFunction_t)();
+	typedef void (objType::*stateFunction_t)(Phase_t phase);
 
 	void stateUpdate() {
 		if (m_currentState) {
-			m_stateUpdate = true;
-			(m_objPtr->*m_currentState)();
-			m_stateUpdate = false;
+			(m_objPtr->*m_currentState)(Update);
 		}
-	}
-
-	bool entering() const {
-		return m_stateEnter;
-	}
-
-	bool leaving() const {
-		return m_stateLeave;
-	}
-
-	bool updating() const {
-		return m_stateUpdate;
 	}
 
 	void stateGoto(stateFunction_t state) {
 		if (m_currentState) {
-			m_stateLeave = true;
-			(m_objPtr->*m_currentState)();
-			m_stateLeave = false;
+			(m_objPtr->*m_currentState)(Leave);
 		}
 
 		m_currentState = state;
 
 		if (m_currentState) {
-			m_stateEnter = true;
-			(m_objPtr->*m_currentState)();
-			m_stateEnter = false;
+			(m_objPtr->*m_currentState)(Enter);
 		}
 	}
 
   private:
 	stateFunction_t m_currentState;
 	objType* m_objPtr;
-	bool m_stateEnter;
-	bool m_stateLeave;
-	bool m_stateUpdate;
 };
 
 #endif /* STATE_MACHINE_H */

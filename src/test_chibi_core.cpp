@@ -33,31 +33,31 @@ struct TestStateMachine : public StateMachine<TestStateMachine> {
 	TestStateMachine() : StateMachine(this) {
 	}
 
-	void state1() {
-		if (entering()) {
+	void state1(Phase_t p) {
+		if (p == Enter) {
 			std::cout << " state1::enter" << std::endl;
 			m_trace += "s1e ";
 		}
-		if (updating()) {
+		if (p == Update) {
 			std::cout << " state1::update" << std::endl;
 			m_trace += "s1u ";
 		}
-		if (leaving()) {
+		if (p == Leave) {
 			std::cout << " state1::leave" << std::endl;
 			m_trace += "s1l ";
 		}
 	}
 
-	void state2() {
-		if (entering()) {
+	void state2(Phase_t p) {
+		if (p == Enter) {
 			std::cout << " state2::enter" << std::endl;
 			m_trace += "s2e ";
 		}
-		if (updating()) {
+		if (p == Update) {
 			std::cout << " state2::update" << std::endl;
 			m_trace += "s2u ";
 		}
-		if (leaving()) {
+		if (p == Leave) {
 			std::cout << " state2::leave" << std::endl;
 			m_trace += "s2l ";
 		}

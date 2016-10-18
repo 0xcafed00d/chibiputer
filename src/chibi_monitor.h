@@ -19,9 +19,9 @@ namespace Chibi {
 	  private:
 		void updateCursor();
 
-		void stateWaitCmd();
-		void stateAddressInput();
-		void stateDataInput();
+		void stateWaitCmd(Phase_t p);
+		void stateAddressInput(Phase_t p);
+		void stateDataInput(Phase_t p);
 
 		Core* m_core;
 		IO* m_io;

@@ -38,12 +38,13 @@ namespace Chibi {
 		}
 	}
 
-	void Monitor::stateWaitCmd() {
-		if (entering()) {
+	void Monitor::stateWaitCmd(Phase_t p) {
+		if (p == Enter) {
 			m_io->clearDisplay();
 			m_io->displayDigit(3, 0xc);
+			m_cursorPos = 0;
 		}
-		if (updating()) {
+		if (p == Update) {
 			updateCursor();
 			if (m_lastKey != 0xff) {
 				if (m_lastKey < 0x10) {
@@ -55,17 +56,18 @@ namespace Chibi {
 				m_lastKey = 0xff;
 			}
 		}
-		if (leaving()) {
+		if (p == Leave) {
 			m_io->clearDisplay();
 		}
 	}
 
-	void Monitor::stateAddressInput() {
-		if (entering()) {
+	void Monitor::stateAddressInput(Phase_t p) {
+		if (p == Enter) {
 			m_io->clearDisplay();
+			m_io->displayDigit(3, 0xa);
 			m_cursorPos = 1;
 		}
-		if (updating()) {
+		if (p == Update) {
 			updateCursor();
 
 			if (m_lastKey != 0xff) {
@@ -73,20 +75,23 @@ namespace Chibi {
 					m_io->displayDigit(m_cursorPos, m_lastKey);
 					m_cursorPos = (m_cursorPos - 1) & 1;
 				}
+				if (m_lastKey == 0x83) {
+					stateGoto(&Monitor::stateWaitCmd);
+				}
 				m_lastKey = 0xff;
 			}
 		}
-		if (leaving()) {
+		if (p == Leave) {
 			m_io->clearDisplay();
 		}
 	}
 
-	void Monitor::stateDataInput() {
-		if (entering()) {
+	void Monitor::stateDataInput(Phase_t p) {
+		if (p == Enter) {
 			m_io->clearDisplay();
 			m_cursorPos = 1;
 		}
-		if (updating()) {
+		if (p == Update) {
 			updateCursor();
 			m_io->displayByte(1, m_currentAddr);
 
@@ -98,7 +103,7 @@ namespace Chibi {
 				m_lastKey = 0xff;
 			}
 		}
-		if (leaving()) {
+		if (p == Leave) {
 			m_io->clearDisplay();
 		}
 	}
