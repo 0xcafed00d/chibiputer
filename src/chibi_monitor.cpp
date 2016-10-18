@@ -7,7 +7,7 @@ namespace Chibi {
 	    0, &Monitor::stateAddressInput, &Monitor::stateDataInput};
 
 	Monitor::Monitor()
-	    : StateMachine(this), m_cursorBlink(false), m_lastKey(0xff), m_currentAddr(0x10) {
+	    : StateMachine(this), m_cursorBlink(false), m_keyPressed(0xff), m_currentAddr(0x10) {
 	}
 
 	void Monitor::init(IO* io, Core* core) {
@@ -26,8 +26,14 @@ namespace Chibi {
 
 	void Monitor::onKey(uint8_t scancode, uint8_t value, bool pressed) {
 		if (pressed) {
-			m_lastKey = value;
+			m_keyPressed = value;
 		}
+	}
+
+	uint8_t Monitor::getKey() {
+		uint8_t key = m_keyPressed;
+		m_keyPressed = 0xff;
+		return key;
 	}
 
 	void Monitor::updateCursor() {
@@ -42,6 +48,18 @@ namespace Chibi {
 		}
 	}
 
+	void Monitor::handleCommonKeys(uint8_t key) {
+		if (key == KEY_CMD) {
+			stateGoto(&Monitor::stateCommand);
+		}
+		if (key == KEY_UP) {
+			m_currentAddr++;
+		}
+		if (key == KEY_DOWN) {
+			m_currentAddr--;
+		}
+	}
+
 	void Monitor::stateCommand(Phase_t p) {
 		static uint8_t command;
 		if (p == Enter) {
@@ -52,21 +70,32 @@ namespace Chibi {
 		}
 		if (p == Update) {
 			updateCursor();
-			if (m_lastKey != 0xff) {
-				if (m_lastKey < 0x10) {
-					m_io->displayDigit(0, m_lastKey);
-					command = m_lastKey;
+			uint8_t key = getKey();
+			if (key != 0xff) {
+				if (key < 0x10) {
+					m_io->displayDigit(0, key);
+					command = key;
 				}
-				if (m_lastKey == KEY_ENTER) {
+				if (key == KEY_ENTER) {
 					if (m_commands[command]) {
 						stateGoto(m_commands[command]);
 					}
 				}
-				m_lastKey = 0xff;
 			}
 		}
 		if (p == Leave) {
 		}
+	}
+
+	static uint8_t byteInputHelper(uint8_t pos, uint8_t value, uint8_t inp) {
+		if (pos == 0) {
+			value &= 0xf0;
+			value |= inp;
+		} else {
+			value &= 0x0f;
+			value |= (inp << 4);
+		}
+		return value;
 	}
 
 	void Monitor::stateAddressInput(Phase_t p) {
@@ -79,27 +108,16 @@ namespace Chibi {
 			m_io->displayByte(0, m_currentAddr);
 			updateCursor();
 
-			if (m_lastKey != 0xff) {
-				if (m_lastKey < 0x10) {
-					if (m_cursorPos == 0) {
-						m_currentAddr &= 0xf0;
-						m_currentAddr |= m_lastKey;
-					} else {
-						m_currentAddr &= 0x0f;
-						m_currentAddr |= (m_lastKey << 4);
-					}
+			uint8_t key = getKey();
+			if (key != 0xff) {
+				if (key < 0x10) {
+					m_currentAddr = byteInputHelper(m_cursorPos, m_currentAddr, key);
 					m_cursorPos = (m_cursorPos - 1) & 1;
 				}
-				if (m_lastKey == KEY_ENTER || m_lastKey == KEY_CMD) {
+				handleCommonKeys(key);
+				if (key == KEY_ENTER) {
 					stateGoto(&Monitor::stateCommand);
 				}
-				if (m_lastKey == KEY_UP) {
-					m_currentAddr++;
-				}
-				if (m_lastKey == KEY_DOWN) {
-					m_currentAddr--;
-				}
-				m_lastKey = 0xff;
 			}
 		}
 		if (p == Leave) {
@@ -116,29 +134,18 @@ namespace Chibi {
 			m_io->displayByte(0, m_core->peek(m_currentAddr));
 			updateCursor();
 
-			if (m_lastKey != 0xff) {
-				if (m_lastKey < 0x10) {
+			uint8_t key = getKey();
+			if (key != 0xff) {
+				if (key < 0x10) {
 					uint8_t data = m_core->peek(m_currentAddr);
-					if (m_cursorPos == 0) {
-						data &= 0xf0;
-						data |= m_lastKey;
-					} else {
-						data &= 0x0f;
-						data |= (m_lastKey << 4);
-					}
+					data = byteInputHelper(m_cursorPos, data, key);
 					m_core->poke(m_currentAddr, data);
 					m_cursorPos = (m_cursorPos - 1) & 1;
 				}
-				if (m_lastKey == KEY_CMD) {
-					stateGoto(&Monitor::stateCommand);
-				}
-				if (m_lastKey == KEY_UP || m_lastKey == KEY_ENTER) {
+				handleCommonKeys(key);
+				if (key == KEY_ENTER) {
 					m_currentAddr++;
 				}
-				if (m_lastKey == KEY_DOWN) {
-					m_currentAddr--;
-				}
-				m_lastKey = 0xff;
 			}
 		}
 		if (p == Leave) {
