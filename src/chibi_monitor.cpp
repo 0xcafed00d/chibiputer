@@ -3,8 +3,22 @@
 
 namespace Chibi {
 
-	StateMachine<Monitor>::stateFunction_t Monitor::m_commands[16] = {
-	    0, &Monitor::stateAddressInput, &Monitor::stateDataInput};
+	StateMachine<Monitor>::stateFunction_t Monitor::m_commands[16] = {0,
+	                                                                  &Monitor::stateAddressInput,
+	                                                                  &Monitor::stateDataInput,
+	                                                                  0,
+	                                                                  &Monitor::stateRun,
+	                                                                  &Monitor::stateStep,
+	                                                                  0,
+	                                                                  0,
+	                                                                  &Monitor::stateLoad,
+	                                                                  &Monitor::stateSave,
+	                                                                  &Monitor::stateSerialTrace,
+	                                                                  &Monitor::stateSerialDump,
+	                                                                  &Monitor::stateSoftReset,
+	                                                                  &Monitor::stateHardReset,
+	                                                                  0,
+	                                                                  0};
 
 	Monitor::Monitor()
 	    : StateMachine(this), m_cursorBlink(false), m_keyPressed(0xff), m_currentAddr(0x10) {
@@ -69,7 +83,9 @@ namespace Chibi {
 			command = 0;
 		}
 		if (p == Update) {
+			m_io->displayDigit(0, command);
 			updateCursor();
+
 			uint8_t key = getKey();
 			if (key != 0xff) {
 				if (key < 0x10) {
@@ -147,6 +163,78 @@ namespace Chibi {
 					m_currentAddr++;
 				}
 			}
+		}
+		if (p == Leave) {
+		}
+	}
+
+	void Monitor::stateSoftReset(Phase_t p) {
+		if (p == Enter) {
+		}
+		if (p == Update) {
+		}
+		if (p == Leave) {
+		}
+	}
+
+	void Monitor::stateHardReset(Phase_t p) {
+		if (p == Enter) {
+		}
+		if (p == Update) {
+		}
+		if (p == Leave) {
+		}
+	}
+
+	void Monitor::stateRun(Phase_t p) {
+		if (p == Enter) {
+		}
+		if (p == Update) {
+		}
+		if (p == Leave) {
+		}
+	}
+
+	void Monitor::stateStep(Phase_t p) {
+		if (p == Enter) {
+		}
+		if (p == Update) {
+		}
+		if (p == Leave) {
+		}
+	}
+
+	void Monitor::stateSave(Phase_t p) {
+		if (p == Enter) {
+		}
+		if (p == Update) {
+		}
+		if (p == Leave) {
+		}
+	}
+
+	void Monitor::stateLoad(Phase_t p) {
+		if (p == Enter) {
+		}
+		if (p == Update) {
+		}
+		if (p == Leave) {
+		}
+	}
+
+	void Monitor::stateSerialTrace(Phase_t p) {
+		if (p == Enter) {
+		}
+		if (p == Update) {
+		}
+		if (p == Leave) {
+		}
+	}
+
+	void Monitor::stateSerialDump(Phase_t p) {
+		if (p == Enter) {
+		}
+		if (p == Update) {
 		}
 		if (p == Leave) {
 		}

@@ -31,6 +31,17 @@ namespace Chibi {
 		void stateAddressInput(Phase_t p);
 		void stateDataInput(Phase_t p);
 
+		void stateSoftReset(Phase_t p);
+		void stateHardReset(Phase_t p);
+
+		void stateRun(Phase_t p);
+		void stateStep(Phase_t p);
+
+		void stateSave(Phase_t p);
+		void stateLoad(Phase_t p);
+		void stateSerialTrace(Phase_t p);
+		void stateSerialDump(Phase_t p);
+
 		Core* m_core;
 		IO* m_io;
 		int m_cursorPos;
