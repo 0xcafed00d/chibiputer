@@ -3,22 +3,23 @@
 
 namespace Chibi {
 
-	StateMachine<Monitor>::stateFunction_t Monitor::m_commands[16] = {0,
-	                                                                  &Monitor::stateAddressInput,
-	                                                                  &Monitor::stateDataInput,
-	                                                                  0,
-	                                                                  &Monitor::stateRun,
-	                                                                  &Monitor::stateStep,
-	                                                                  0,
-	                                                                  0,
-	                                                                  &Monitor::stateLoad,
-	                                                                  &Monitor::stateSave,
-	                                                                  &Monitor::stateSerialTrace,
-	                                                                  &Monitor::stateSerialDump,
-	                                                                  &Monitor::stateSoftReset,
-	                                                                  &Monitor::stateHardReset,
-	                                                                  0,
-	                                                                  0};
+	StateMachine<Monitor>::stateFunction_t Monitor::m_commands[16] = {
+	    0,                            // 0
+	    &Monitor::stateAddressInput,  // 1
+	    &Monitor::stateDataInput,     // 2
+	    0,                            // 3
+	    &Monitor::stateRun,           // 4
+	    &Monitor::stateStep,          // 5
+	    0,                            // 6
+	    0,                            // 7
+	    &Monitor::stateLoad,          // 8
+	    &Monitor::stateSave,          // 9
+	    &Monitor::stateSerialTrace,   // a
+	    &Monitor::stateSerialDump,    // b
+	    &Monitor::stateSoftReset,     // c
+	    &Monitor::stateHardReset,     // d
+	    0,                            // e
+	    0};                           // f
 
 	Monitor::Monitor()
 	    : StateMachine(this), m_cursorBlink(false), m_keyPressed(0xff), m_currentAddr(0x10) {
@@ -170,9 +171,18 @@ namespace Chibi {
 
 	void Monitor::stateSoftReset(Phase_t p) {
 		if (p == Enter) {
+			m_io->clearDisplay();
+			m_io->displayByte(0, 0xcc);
 		}
 		if (p == Update) {
-			stateGoto(&Monitor::stateCommand);
+			uint8_t key = getKey();
+			if (key == KEY_ENTER) {
+				stateGoto(&Monitor::stateCommand);
+				m_core->reset(false);
+			}
+			if (key == KEY_CMD) {
+				stateGoto(&Monitor::stateCommand);
+			}
 		}
 		if (p == Leave) {
 		}
@@ -180,9 +190,18 @@ namespace Chibi {
 
 	void Monitor::stateHardReset(Phase_t p) {
 		if (p == Enter) {
+			m_io->clearDisplay();
+			m_io->displayByte(0, 0xcc);
 		}
 		if (p == Update) {
-			stateGoto(&Monitor::stateCommand);
+			uint8_t key = getKey();
+			if (key == KEY_ENTER) {
+				stateGoto(&Monitor::stateCommand);
+				m_core->reset(true);
+			}
+			if (key == KEY_CMD) {
+				stateGoto(&Monitor::stateCommand);
+			}
 		}
 		if (p == Leave) {
 		}
@@ -200,9 +219,20 @@ namespace Chibi {
 
 	void Monitor::stateStep(Phase_t p) {
 		if (p == Enter) {
+			m_io->clearDisplay();
 		}
 		if (p == Update) {
-			stateGoto(&Monitor::stateCommand);
+			m_io->displayByte(1, m_core->peek(Core::ADDR_PC));
+			m_io->displayByte(0, m_core->peek(Core::ADDR_A));
+			m_io->setDP(0, m_core->peek(Core::ADDR_FLAGS) != 0);
+
+			uint8_t key = getKey();
+			if (key == KEY_ENTER) {
+				m_core->exec();
+			}
+			if (key == KEY_CMD) {
+				stateGoto(&Monitor::stateCommand);
+			}
 		}
 		if (p == Leave) {
 		}
@@ -238,20 +268,34 @@ namespace Chibi {
 		}
 	}
 
+	void printHex(uint8_t val) {
+		Serial.print(val >> 4, HEX);
+		Serial.print(val & 0xf, HEX);
+	}
+
 	void Monitor::stateSerialDump(Phase_t p) {
+		uint8_t& addr = m_stateValue;
 		if (p == Enter) {
+			m_io->clearDisplay();
+			addr = 0;
 		}
 		if (p == Update) {
-			for (int n = 0; n < 256; n += 16) {
-				Serial.print(n, HEX);
-				Serial.print(": ");
-				for (int m = 0; m < 16; m++) {
-					Serial.print(m_core->peek(n + m), HEX);
-					Serial.print(' ');
-				}
+			m_io->displayByte(0, addr);
+			if ((addr & 0x0f) == 0) {
 				Serial.println("");
+				printHex(addr);
+				Serial.print(": ");
 			}
-			stateGoto(&Monitor::stateCommand);
+
+			printHex(m_core->peek(addr));
+			Serial.print(' ');
+
+			if (addr == 0xff) {
+				Serial.println("");
+				stateGoto(&Monitor::stateCommand);
+			} else {
+				addr++;
+			}
 		}
 		if (p == Leave) {
 		}
