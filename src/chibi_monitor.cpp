@@ -75,7 +75,7 @@ namespace Chibi {
 	}
 
 	void Monitor::stateCommand(Phase_t p) {
-		static uint8_t command;
+		uint8_t& command = m_stateValue;
 		if (p == Enter) {
 			m_io->clearDisplay();
 			m_io->displayDigit(3, 0xc);
@@ -242,6 +242,15 @@ namespace Chibi {
 		if (p == Enter) {
 		}
 		if (p == Update) {
+			for (int n = 0; n < 256; n += 16) {
+				Serial.print(n, HEX);
+				Serial.print(": ");
+				for (int m = 0; m < 16; m++) {
+					Serial.print(m_core->peek(n + m), HEX);
+					Serial.print(' ');
+				}
+				Serial.println("");
+			}
 			stateGoto(&Monitor::stateCommand);
 		}
 		if (p == Leave) {

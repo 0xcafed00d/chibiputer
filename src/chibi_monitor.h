@@ -46,9 +46,12 @@ namespace Chibi {
 		IO* m_io;
 		int m_cursorPos;
 		TimeOutms m_cursorTime;
+		TimeOutms m_stateTimer;
+		uint8_t m_stateValue;
 		bool m_cursorBlink;
 		uint8_t m_keyPressed;
 		uint8_t m_currentAddr;
+
 		static StateMachine::stateFunction_t m_commands[16];
 	};
 }
