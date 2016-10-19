@@ -1,4 +1,5 @@
 #include <Arduino.h>
+#include <EEPROM.h>
 #include "chibi_monitor.h"
 
 namespace Chibi {
@@ -239,22 +240,39 @@ namespace Chibi {
 	}
 
 	void Monitor::stateSave(Phase_t p) {
+		uint8_t& addr = m_stateValue;
 		if (p == Enter) {
+			m_io->clearDisplay();
+			addr = 0;
 		}
 		if (p == Update) {
-			stateGoto(&Monitor::stateCommand);
-		}
-		if (p == Leave) {
+			m_io->displayByte(0, addr);
+			EEPROM.write(addr, m_core->peek(addr));
+
+			if (addr == 0xff) {
+				stateGoto(&Monitor::stateCommand);
+			} else {
+				addr++;
+			}
 		}
 	}
 
 	void Monitor::stateLoad(Phase_t p) {
+		uint8_t& addr = m_stateValue;
 		if (p == Enter) {
+			m_io->clearDisplay();
+			addr = 0;
 		}
 		if (p == Update) {
-			stateGoto(&Monitor::stateCommand);
-		}
-		if (p == Leave) {
+			m_io->displayByte(0, addr);
+			m_core->poke(addr, EEPROM.read(addr));
+
+			if (addr == 0xff) {
+				stateGoto(&Monitor::stateCommand);
+			} else {
+				addr++;
+			}
+			delay(2);
 		}
 	}
 
