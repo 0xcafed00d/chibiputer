@@ -172,6 +172,7 @@ namespace Chibi {
 		if (p == Enter) {
 		}
 		if (p == Update) {
+			stateGoto(&Monitor::stateCommand);
 		}
 		if (p == Leave) {
 		}
@@ -181,6 +182,7 @@ namespace Chibi {
 		if (p == Enter) {
 		}
 		if (p == Update) {
+			stateGoto(&Monitor::stateCommand);
 		}
 		if (p == Leave) {
 		}
@@ -190,6 +192,7 @@ namespace Chibi {
 		if (p == Enter) {
 		}
 		if (p == Update) {
+			stateGoto(&Monitor::stateCommand);
 		}
 		if (p == Leave) {
 		}
@@ -199,6 +202,7 @@ namespace Chibi {
 		if (p == Enter) {
 		}
 		if (p == Update) {
+			stateGoto(&Monitor::stateCommand);
 		}
 		if (p == Leave) {
 		}
@@ -208,6 +212,7 @@ namespace Chibi {
 		if (p == Enter) {
 		}
 		if (p == Update) {
+			stateGoto(&Monitor::stateCommand);
 		}
 		if (p == Leave) {
 		}
@@ -217,6 +222,7 @@ namespace Chibi {
 		if (p == Enter) {
 		}
 		if (p == Update) {
+			stateGoto(&Monitor::stateCommand);
 		}
 		if (p == Leave) {
 		}
@@ -226,6 +232,7 @@ namespace Chibi {
 		if (p == Enter) {
 		}
 		if (p == Update) {
+			stateGoto(&Monitor::stateCommand);
 		}
 		if (p == Leave) {
 		}
@@ -235,6 +242,7 @@ namespace Chibi {
 		if (p == Enter) {
 		}
 		if (p == Update) {
+			stateGoto(&Monitor::stateCommand);
 		}
 		if (p == Leave) {
 		}
