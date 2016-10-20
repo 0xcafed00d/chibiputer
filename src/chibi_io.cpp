@@ -35,6 +35,7 @@ namespace Chibi {
 		clearDisplay();
 		setup();
 		m_scanTimer = TimeOutus(3000);
+		m_repeatingKey = 0xff;
 	}
 
 	void IO::setKeyReceiver(KeyReceiver* kr) {
@@ -153,14 +154,47 @@ namespace Chibi {
 					uint8_t mask = 1 << col;
 
 					if ((m_keymap[row] & mask) != (m_newKeymap[row] & mask)) {
-						m_keyreceiver->onKey(scanCode, keyValues[scanCode],
-						                     (bool)(m_newKeymap[row] & mask));
+						keyEvent(scanCode, keyValues[scanCode], (bool)(m_newKeymap[row] & mask));
 					}
 				}
 			}
 		}
 
-		for (int n = 0; n < 4; n++)
+		for (int n = 0; n < 4; n++) {
 			m_keymap[n] = m_newKeymap[n];
+		}
+		handleKeyRepeat();
+	}
+
+	void IO::handleKeyRepeat() {
+		if (m_repeatingKey == 0xff || !m_keyreceiver) {
+			return;
+		}
+
+		if (m_repeatStartTimer.hasTimedOut()) {
+			if (m_repeatSpeedTimer.hasTimedOut()) {
+				m_keyreceiver->onKey(m_repeatingKey, keyValues[m_repeatingKey], true);
+				m_repeatSpeedTimer = TimeOutms(150);
+			}
+		}
+	}
+
+	void IO::keyEvent(uint8_t scancode, uint8_t value, bool pressed) {
+		if (m_repeatingKey == 0xff) {
+			if (pressed) {
+				m_repeatingKey = scancode;
+				m_repeatStartTimer = TimeOutms(1000);
+			}
+		} else {
+			if (!pressed) {
+				if (m_repeatingKey == scancode) {
+					m_repeatingKey = 0xff;
+				}
+			}
+		}
+
+		if (m_keyreceiver) {
+			m_keyreceiver->onKey(scancode, value, pressed);
+		}
 	}
 }

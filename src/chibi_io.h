@@ -60,6 +60,8 @@ namespace Chibi {
 		uint8_t readPad();
 		void processPadRow(int row, int pressed);
 		void processPad();
+		void handleKeyRepeat();
+		void keyEvent(uint8_t scancode, uint8_t value, bool pressed);
 
 		int* m_commons;
 		int* m_segments;
@@ -70,6 +72,9 @@ namespace Chibi {
 		uint8_t m_newKeymap[4];
 		KeyReceiver* m_keyreceiver;
 		TimeOutus m_scanTimer;
+		TimeOutms m_repeatStartTimer;
+		TimeOutms m_repeatSpeedTimer;
+		uint8_t m_repeatingKey;
 	};
 }
 
