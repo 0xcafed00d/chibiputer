@@ -210,9 +210,14 @@ namespace Chibi {
 
 	void Monitor::stateRun(Phase_t p) {
 		if (p == Enter) {
+			m_io->clearDisplay();
 		}
 		if (p == Update) {
-			stateGoto(&Monitor::stateCommand);
+			m_core->exec();
+			uint8_t key = getKey();
+			if (key == KEY_CMD) {
+				stateGoto(&Monitor::stateCommand);
+			}
 		}
 		if (p == Leave) {
 		}
