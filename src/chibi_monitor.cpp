@@ -33,7 +33,7 @@ namespace Chibi {
 		m_cursorTime = TimeOutms(250);
 
 		io->setKeyReceiver(this);
-		stateGoto(&Monitor::stateCommand);
+		stateGoto(&Monitor::stateDisplayCheck);
 	}
 
 	void Monitor::update() {
@@ -114,6 +114,28 @@ namespace Chibi {
 			value |= (inp << 4);
 		}
 		return value;
+	}
+
+	void Monitor::stateDisplayCheck(Phase_t p) {
+		uint8_t& bits = m_stateValue;
+		if (p == Enter) {
+			m_io->clearDisplay();
+			m_stateTimer = TimeOutms(200);
+		}
+		if (p == Update) {
+			for (int n = 0; n < 4; n++) {
+				m_io->displayPattern(n, bits);
+			}
+			if (m_stateTimer.hasTimedOut()) {
+				if (bits == 0xff) {
+					stateGoto(&Monitor::stateCommand);
+				}
+				m_stateTimer.reset();
+				bits = (bits << 1) | 1;
+			}
+		}
+		if (p == Leave) {
+		}
 	}
 
 	void Monitor::stateAddressInput(Phase_t p) {

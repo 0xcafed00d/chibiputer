@@ -27,6 +27,8 @@ namespace Chibi {
 		uint8_t getKey();
 		void handleCommonKeys(uint8_t key);
 
+		void stateDisplayCheck(Phase_t p);
+
 		void stateCommand(Phase_t p);
 		void stateAddressInput(Phase_t p);
 		void stateDataInput(Phase_t p);
