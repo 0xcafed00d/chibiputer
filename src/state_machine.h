@@ -1,6 +1,8 @@
 #ifndef STATE_MACHINE_H
 #define STATE_MACHINE_H
 
+#include <stdint.h>
+
 template <typename objType>
 struct StateMachine {
   public:
@@ -19,18 +21,20 @@ struct StateMachine {
 			m_inUpdate = false;
 
 			if (m_gotoState) {
-				stateGoto(m_gotoState);
+				stateGoto(m_gotoState, m_gotoParam);
 				m_gotoState = 0;
 			}
 		}
 	}
 
-	void stateGoto(stateFunction_t state) {
+	void stateGoto(stateFunction_t state, uint32_t param = 0) {
 		if (m_inUpdate) {
 			m_gotoState = state;
+			m_gotoParam = param;
 			return;
 		}
 
+		m_currentParam = param;
 		if (m_currentState) {
 			(m_objPtr->*m_currentState)(Leave);
 		}
@@ -42,9 +46,17 @@ struct StateMachine {
 		}
 	}
 
+	uint32_t stateParam() {
+		return m_currentParam;
+	}
+
   private:
 	stateFunction_t m_currentState;
+	uint32_t m_currentParam;
+
 	stateFunction_t m_gotoState;
+	uint32_t m_gotoParam;
+
 	objType* m_objPtr;
 	bool m_inUpdate;
 };
