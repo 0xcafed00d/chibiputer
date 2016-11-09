@@ -13,6 +13,15 @@ C D E F   Ext3
 
 namespace Chibi {
 
+	const uint8_t SEG_T = 0b10000000;
+	const uint8_t SEG_M = 0b00000010;
+	const uint8_t SEG_B = 0b00010000;
+	const uint8_t SEG_TL = 0b00000100;
+	const uint8_t SEG_TR = 0b01000000;
+	const uint8_t SEG_BL = 0b00001000;
+	const uint8_t SEG_BR = 0b00100000;
+	const uint8_t SEG_DP = 0b00000001;
+
 	const uint8_t KEY_0 = 19;
 	const uint8_t KEY_1 = 18;
 	const uint8_t KEY_2 = 17;
