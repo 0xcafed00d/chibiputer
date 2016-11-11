@@ -37,6 +37,17 @@ namespace Chibi {
 	const uint8_t LET_M = SEG_T | SEG_BL | SEG_TL | SEG_BR | SEG_TR;
 	const uint8_t LET_N = SEG_M | SEG_BL | SEG_BR;
 	const uint8_t LET_O = SEG_M | SEG_B | SEG_BL | SEG_BR;
+	const uint8_t LET_P = SEG_M | SEG_T | SEG_BL | SEG_TR | SEG_TL;
+	const uint8_t LET_Q = SEG_M | SEG_T | SEG_BR | SEG_TR | SEG_TL;
+	const uint8_t LET_R = SEG_M | SEG_BL;
+	const uint8_t LET_S = SEG_M | SEG_B | SEG_BR | SEG_TL;
+	const uint8_t LET_T = SEG_M | SEG_B | SEG_BL | SEG_TL;
+	const uint8_t LET_U = SEG_B | SEG_BL | SEG_BR;
+	const uint8_t LET_V = SEG_B | SEG_BR | SEG_TL | SEG_BL | SEG_TR;
+	const uint8_t LET_W = SEG_M | SEG_B | SEG_BR | SEG_TL | SEG_BL | SEG_TR;
+	const uint8_t LET_X = SEG_M | SEG_BR | SEG_TL | SEG_BL | SEG_TR;
+	const uint8_t LET_Y = SEG_M | SEG_B | SEG_BR | SEG_TL | SEG_TR;
+	const uint8_t LET_Z = SEG_T | SEG_B | SEG_TR | SEG_BL;
 
 	const uint8_t KEY_0 = 19;
 	const uint8_t KEY_1 = 18;

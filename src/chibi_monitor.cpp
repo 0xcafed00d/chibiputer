@@ -81,9 +81,9 @@ namespace Chibi {
 		if (p == Enter) {
 			m_io->clearDisplay();
 			m_io->displayDigit(3, 0xc);
-			m_io->displayPattern(3, LET_M);
-			m_io->displayPattern(2, LET_N);
-			m_io->displayPattern(1, LET_O);
+			m_io->displayPattern(3, LET_Y);
+			m_io->displayPattern(2, LET_Z);
+			m_io->displayPattern(1, LET_X);
 			m_cursorPos = 0;
 			command = 0;
 		}
