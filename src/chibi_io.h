@@ -22,6 +22,22 @@ namespace Chibi {
 	const uint8_t SEG_BR = 0b00100000;
 	const uint8_t SEG_DP = 0b00000001;
 
+	const uint8_t LET_A = SEG_T | SEG_M | SEG_BR | SEG_BL | SEG_TL | SEG_TR;
+	const uint8_t LET_B = SEG_M | SEG_B | SEG_TL | SEG_BL | SEG_BR;
+	const uint8_t LET_C = SEG_M | SEG_B | SEG_BL;
+	const uint8_t LET_D = SEG_M | SEG_B | SEG_BL | SEG_TR | SEG_BR;
+	const uint8_t LET_E = SEG_T | SEG_M | SEG_B | SEG_BL | SEG_TL;
+	const uint8_t LET_F = SEG_T | SEG_M | SEG_BL | SEG_TL;
+	const uint8_t LET_G = SEG_T | SEG_B | SEG_BL | SEG_TL | SEG_BR;
+	const uint8_t LET_H = SEG_M | SEG_TR | SEG_BL | SEG_TL | SEG_BR;
+	const uint8_t LET_I = SEG_BR;
+	const uint8_t LET_J = SEG_B | SEG_TR | SEG_BL | SEG_BR;
+	const uint8_t LET_K = SEG_M | SEG_T | SEG_BL | SEG_TL | SEG_BR;
+	const uint8_t LET_L = SEG_B | SEG_BL | SEG_TL;
+	const uint8_t LET_M = SEG_T | SEG_BL | SEG_TL | SEG_BR | SEG_TR;
+	const uint8_t LET_N = SEG_M | SEG_BL | SEG_BR;
+	const uint8_t LET_O = SEG_M | SEG_B | SEG_BL | SEG_BR;
+
 	const uint8_t KEY_0 = 19;
 	const uint8_t KEY_1 = 18;
 	const uint8_t KEY_2 = 17;
