@@ -39,8 +39,11 @@ namespace Chibi {
 		void stateRun(Phase_t p);
 		void stateStep(Phase_t p);
 
-		void stateSave(Phase_t p);
-		void stateLoad(Phase_t p);
+		void stateSaveBegin(Phase_t p);
+		void stateLoadBegin(Phase_t p);
+		void stateSaveLoadSlot(Phase_t p);
+		void stateDoSaveLoad(Phase_t p);
+
 		void stateSerialTrace(Phase_t p);
 		void stateSerialDump(Phase_t p);
 
@@ -53,6 +56,7 @@ namespace Chibi {
 		bool m_cursorBlink;
 		uint8_t m_keyPressed;
 		uint8_t m_currentAddr;
+		uint8_t m_saveLoadSlot;
 
 		static StateMachine::stateFunction_t m_commands[16];
 	};

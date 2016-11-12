@@ -13,8 +13,8 @@ namespace Chibi {
 	    &Monitor::stateStep,          // 5
 	    0,                            // 6
 	    0,                            // 7
-	    &Monitor::stateLoad,          // 8
-	    &Monitor::stateSave,          // 9
+	    &Monitor::stateLoadBegin,     // 8
+	    &Monitor::stateSaveBegin,     // 9
 	    &Monitor::stateSerialTrace,   // a
 	    &Monitor::stateSerialDump,    // b
 	    &Monitor::stateSoftReset,     // c
@@ -23,7 +23,11 @@ namespace Chibi {
 	    0};                           // f
 
 	Monitor::Monitor()
-	    : StateMachine(this), m_cursorBlink(false), m_keyPressed(0xff), m_currentAddr(0x10) {
+	    : StateMachine(this),
+	      m_cursorBlink(false),
+	      m_keyPressed(0xff),
+	      m_currentAddr(0x10),
+	      m_saveLoadSlot(0) {
 	}
 
 	void Monitor::init(IO* io, Core* core) {
@@ -81,9 +85,6 @@ namespace Chibi {
 		if (p == Enter) {
 			m_io->clearDisplay();
 			m_io->displayDigit(3, 0xc);
-			m_io->displayPattern(3, LET_Y);
-			m_io->displayPattern(2, LET_Z);
-			m_io->displayPattern(1, LET_X);
 			m_cursorPos = 0;
 			command = 0;
 		}
@@ -198,7 +199,8 @@ namespace Chibi {
 	void Monitor::stateSoftReset(Phase_t p) {
 		if (p == Enter) {
 			m_io->clearDisplay();
-			m_io->displayByte(0, 0xcc);
+			m_io->displayDigit(3, 5);
+			m_io->displayPattern(2, LET_R);
 		}
 		if (p == Update) {
 			uint8_t key = getKey();
@@ -217,7 +219,8 @@ namespace Chibi {
 	void Monitor::stateHardReset(Phase_t p) {
 		if (p == Enter) {
 			m_io->clearDisplay();
-			m_io->displayByte(0, 0xcc);
+			m_io->displayPattern(3, LET_H);
+			m_io->displayPattern(2, LET_R);
 		}
 		if (p == Update) {
 			uint8_t key = getKey();
@@ -269,40 +272,64 @@ namespace Chibi {
 		}
 	}
 
-	void Monitor::stateSave(Phase_t p) {
-		uint8_t& addr = m_stateValue;
+	void Monitor::stateSaveBegin(Phase_t p) {
+		if (p == Update) {
+			stateGoto(&Monitor::stateSaveLoadSlot, 'S');
+		}
+	}
+
+	void Monitor::stateLoadBegin(Phase_t p) {
+		if (p == Update) {
+			stateGoto(&Monitor::stateSaveLoadSlot, 'L');
+		}
+	}
+
+	void Monitor::stateSaveLoadSlot(Phase_t p) {
 		if (p == Enter) {
 			m_io->clearDisplay();
-			addr = 0;
+			if (stateParam() == 'S') {
+				m_io->displayDigit(3, 5);
+			} else {
+				m_io->displayPattern(3, LET_L);
+			}
+			m_cursorPos = 0;
+			m_io->displayDigit(0, m_saveLoadSlot);
 		}
 		if (p == Update) {
-			m_io->displayByte(0, addr);
-			EEPROM.write(addr, m_core->peek(addr));
-
-			if (addr == 0xff) {
+			updateCursor();
+			uint8_t key = getKey();
+			if (key < 4) {
+				m_saveLoadSlot = key;
+				m_io->displayDigit(0, m_saveLoadSlot);
+			}
+			if (key == KEY_ENTER) {
+				stateGoto(&Monitor::stateDoSaveLoad, stateParam());
+			}
+			if (key == KEY_CMD) {
 				stateGoto(&Monitor::stateCommand);
-			} else {
-				addr++;
 			}
 		}
 	}
 
-	void Monitor::stateLoad(Phase_t p) {
+	void Monitor::stateDoSaveLoad(Phase_t p) {
 		uint8_t& addr = m_stateValue;
 		if (p == Enter) {
-			m_io->clearDisplay();
 			addr = 0;
 		}
 		if (p == Update) {
 			m_io->displayByte(0, addr);
-			m_core->poke(addr, EEPROM.read(addr));
 
+			if (stateParam() == 'S') {
+				EEPROM.write(addr, m_core->peek(addr));
+			} else {
+				m_core->poke(addr, EEPROM.read(addr));
+			}
+			delay(2);
 			if (addr == 0xff) {
 				stateGoto(&Monitor::stateCommand);
 			} else {
 				addr++;
 			}
-			delay(2);
 		}
 	}
 
