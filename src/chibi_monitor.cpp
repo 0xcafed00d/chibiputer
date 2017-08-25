@@ -399,21 +399,17 @@ namespace Chibi {
 	}
 
 	void Monitor::stateBatteryVoltage(Phase_t p) {
+		static int vcc = 0;
+
 		if (p == Enter) {
 			m_io->clearDisplay();
-			m_stateTimer = TimeOutms(1);
+			vcc = getVcc();
+			m_io->displayDigit(0, vcc % 10);
+			m_io->displayDigit(1, (vcc / 10) % 10);
+			m_io->displayDigit(2, (vcc / 100) % 10, true);
+			m_io->displayDigit(3, (vcc / 1000) % 10);
 		}
 		if (p == Update) {
-			if (m_stateTimer.hasTimedOut()) {
-				m_stateTimer = TimeOutms(1000);
-
-				int vcc = getVcc();
-				m_io->displayDigit(0, vcc % 10);
-				m_io->displayDigit(1, (vcc / 10) % 10);
-				m_io->displayDigit(2, (vcc / 100) % 10, true);
-				m_io->displayDigit(3, (vcc / 1000) % 10);
-			}
-
 			uint8_t key = getKey();
 			if (key == KEY_CMD) {
 				stateGoto(&Monitor::stateCommand);
