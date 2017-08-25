@@ -2,25 +2,47 @@
 #include <EEPROM.h>
 #include "chibi_monitor.h"
 
-namespace Chibi {
+int getVcc(void)  // Returns actual value of Vcc (x 100)
+{
+	// For 168/328 boards
+	const long InternalReferenceVoltage = 1078L;
+	// Adjust this value to your boards specific internal BG voltage x1000
+	// REFS1 REFS0          --> 0 1, AVcc internal ref. -Selects AVcc external reference
+	// MUX3 MUX2 MUX1 MUX0  --> 1110 1.1V (VBG)         -Selects channel 14, bandgap voltage, to
+	// measure
+	ADMUX = (0 << REFS1) | (1 << REFS0) | (0 << ADLAR) | (1 << MUX3) | (1 << MUX2) | (1 << MUX1) |
+	        (0 << MUX0);
 
+	delay(50);  // Let mux settle a little to get a more stable A/D conversion
+	            // Start a conversion
+	ADCSRA |= _BV(ADSC);
+	// Wait for it to complete
+	while (((ADCSRA & (1 << ADSC)) != 0))
+		;
+	// Scale the value
+	int results = (((InternalReferenceVoltage * 1023L) / ADC) + 5L) /
+	              10L;  // calculates for straight line value
+	return results;
+}
+
+namespace Chibi {
 	StateMachine<Monitor>::stateFunction_t Monitor::m_commands[16] = {
-	    0,                            // 0
-	    &Monitor::stateAddressInput,  // 1
-	    &Monitor::stateDataInput,     // 2
-	    0,                            // 3
-	    &Monitor::stateRun,           // 4
-	    &Monitor::stateStep,          // 5
-	    0,                            // 6
-	    0,                            // 7
-	    &Monitor::stateLoadBegin,     // 8
-	    &Monitor::stateSaveBegin,     // 9
-	    &Monitor::stateSerialTrace,   // a
-	    &Monitor::stateSerialDump,    // b
-	    &Monitor::stateSoftReset,     // c
-	    &Monitor::stateHardReset,     // d
-	    0,                            // e
-	    0};                           // f
+	    0,                               // 0
+	    &Monitor::stateAddressInput,     // 1
+	    &Monitor::stateDataInput,        // 2
+	    0,                               // 3
+	    &Monitor::stateRun,              // 4
+	    &Monitor::stateStep,             // 5
+	    0,                               // 6
+	    0,                               // 7
+	    &Monitor::stateLoadBegin,        // 8
+	    &Monitor::stateSaveBegin,        // 9
+	    &Monitor::stateSerialTrace,      // a
+	    &Monitor::stateSerialDump,       // b
+	    &Monitor::stateSoftReset,        // c
+	    &Monitor::stateHardReset,        // d
+	    0,                               // e
+	    &Monitor::stateBatteryVoltage};  // f
 
 	Monitor::Monitor()
 	    : StateMachine(this),
@@ -370,6 +392,31 @@ namespace Chibi {
 				stateGoto(&Monitor::stateCommand);
 			} else {
 				addr++;
+			}
+		}
+		if (p == Leave) {
+		}
+	}
+
+	void Monitor::stateBatteryVoltage(Phase_t p) {
+		if (p == Enter) {
+			m_io->clearDisplay();
+			m_stateTimer = TimeOutms(1);
+		}
+		if (p == Update) {
+			if (m_stateTimer.hasTimedOut()) {
+				m_stateTimer = TimeOutms(1000);
+
+				int vcc = getVcc();
+				m_io->displayDigit(0, vcc % 10);
+				m_io->displayDigit(1, (vcc / 10) % 10);
+				m_io->displayDigit(2, (vcc / 100) % 10, true);
+				m_io->displayDigit(3, (vcc / 1000) % 10);
+			}
+
+			uint8_t key = getKey();
+			if (key == KEY_CMD) {
+				stateGoto(&Monitor::stateCommand);
 			}
 		}
 		if (p == Leave) {

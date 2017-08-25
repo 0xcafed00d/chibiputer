@@ -47,6 +47,8 @@ namespace Chibi {
 		void stateSerialTrace(Phase_t p);
 		void stateSerialDump(Phase_t p);
 
+		void stateBatteryVoltage(Phase_t p);
+
 		Core* m_core;
 		IO* m_io;
 		int m_cursorPos;

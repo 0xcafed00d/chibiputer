@@ -52,6 +52,7 @@ namespace Chibi {
 		} else {
 			m_digits[index & 3] = 16;  // underscore invalid digit.
 		}
+		setDP(index, dp);
 	}
 
 	void IO::displayHexValue(int val) {
