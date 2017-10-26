@@ -37,3 +37,4 @@ libraries/*
 .vscode/.browse.VC.db
 .idea
 .piolibdeps
+.vscode/c_cpp_properties.json
